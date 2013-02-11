@@ -173,7 +173,9 @@ Chart.prototype = {
 	adjustTickAmounts: function () {
 		if (this.options.chart.alignTicks !== false) {
 			each(this.axes, function (axis) {
-				axis.adjustTickAmount();
+				if (axis.options.tickPositioner === undefined) {
+					axis.adjustTickAmount();
+				}
 			});
 		}
 		this.maxTicks = null;
