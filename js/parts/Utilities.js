@@ -546,7 +546,8 @@ function getTimeTicks(normalizedInterval, min, max, startOfWeek) {
 				(24 * 3600 * 1000 + minDate.getTimezoneOffset() * 60 * 1000) % (24 * 3600 * 1000); // #950
 	
 		// iterate and add tick positions at appropriate values
-		while (time < max) {
+		var counter = 0; //KEEPS THIS LOOP FROM GOING ROGUE IN TWITTER BOOTSTRAP FLUID CONTAINERS
+		while (time < max && counter < 1000) {
 			tickPositions.push(time);
 	
 			// if the interval is years, use Date.UTC to increase years
