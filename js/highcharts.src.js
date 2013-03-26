@@ -667,7 +667,9 @@ function getTimeTicks(normalizedInterval, min, max, startOfWeek) {
 				(24 * 3600 * 1000 + minDate.getTimezoneOffset() * 60 * 1000) % (24 * 3600 * 1000); // #950
 	
 		// iterate and add tick positions at appropriate values
-		while (time < max) {
+		var counter = 0;
+    while (time < max && counter < 10000) {
+      counter++; // Prevents a stack overflow in charts in a Bootstrap fluid container. Unfortunate side-effect: limits the number of data points on the chart
 			tickPositions.push(time);
 	
 			// if the interval is years, use Date.UTC to increase years
@@ -9761,7 +9763,9 @@ Chart.prototype = {
 
 		// Set up auto resize
 		if (optionsChart.reflow !== false) {
-			addEvent(chart, 'load', chart.initReflow);
+			addEvent(chart, 'load', function () {
+        chart.initReflow();
+      });
 		}
 
 		// Chart event handlers
@@ -9849,7 +9853,9 @@ Chart.prototype = {
 	adjustTickAmounts: function () {
 		if (this.options.chart.alignTicks !== false) {
 			each(this.axes, function (axis) {
-				axis.adjustTickAmount();
+        if (axis.options.tickPositioner === undefined) {
+          axis.adjustTickAmount();
+        }
 			});
 		}
 		this.maxTicks = null;
@@ -11124,11 +11130,6 @@ Chart.prototype = {
 		// Run an early event after the container and renderer are established
 		fireEvent(chart, 'init');
 
-		// Initialize range selector for stock charts
-		if (Highcharts.RangeSelector && options.rangeSelector.enabled) {
-			chart.rangeSelector = new Highcharts.RangeSelector(chart);
-		}
-
 		chart.resetMargins();
 		chart.setChartSize();
 
@@ -11143,13 +11144,10 @@ Chart.prototype = {
 			chart.initSeries(serieOptions);
 		});
 
-		// Run an event where series and axes can be added
-		//fireEvent(chart, 'beforeRender');
-
-		// Initialize scroller for stock charts
-		if (Highcharts.Scroller && (options.navigator.enabled || options.scrollbar.enabled)) {
-			chart.scroller = new Highcharts.Scroller(chart);
-		}
+		// Run an event after axes and series are initialized, but before render. At this stage,
+    // the series data is indexed and cached in the xData and yData arrays, so we can access
+    // those before rendering. Used in Highstock. 
+    fireEvent(chart, 'beforeRender'); 
 
 		// depends on inverted and on margins being set
 		chart.tracker = new MouseTracker(chart, options);
