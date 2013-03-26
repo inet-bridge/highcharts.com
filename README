@@ -6,3 +6,14 @@ Official website:  www.highcharts.com
 Official download: www.highcharts.com
 Licensing:         www.highcharts.com/license
 Support:           www.highcharts.com
+
+I-Net Bridge:
+
+The forked versions are in branches prefixed with inet_, such as inet_highstock_v1.2.5.
+Building a new fork:
+1. Check out the tag of the release you wish to fork.
+2. Switch to a new branch, eg. inet_highstock_v1.3.2.
+3. Check which current patches are still necessary. Apply them as separate commits.
+4. Add any new patches. Make sure to commit each patch separately, so they are easy to apply selectively next time.
+5. Run `ant dist` from the command line to build the new Highcharts version. (Ant is a Java library, cf. http://ant.apache.org)
+
