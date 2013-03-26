@@ -546,7 +546,9 @@ function getTimeTicks(normalizedInterval, min, max, startOfWeek) {
 				(24 * 3600 * 1000 + minDate.getTimezoneOffset() * 60 * 1000) % (24 * 3600 * 1000); // #950
 	
 		// iterate and add tick positions at appropriate values
-		while (time < max) {
+		var counter = 0;
+    while (time < max && counter < 10000) {
+      counter++; // Prevents a stack overflow in charts in a Bootstrap fluid container. Unfortunate side-effect: limits the number of data points on the chart
 			tickPositions.push(time);
 	
 			// if the interval is years, use Date.UTC to increase years
